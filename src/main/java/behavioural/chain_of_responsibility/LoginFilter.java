@@ -13,10 +13,11 @@ public class LoginFilter implements IFilter {
     @Override
     public void doFilter(Request request, Response response) {
         if (request.getAuthenticationType() == AuthenticationTypes.NONE) {
-            return;
+            this._unauthorised.doFilter(request,response);
         } else {
             if(null != this._next) {
-                _next.doFilter(request, response);
+                this._next.doFilter(request, response);
+                response.setResponseType(ResponseType.OK);
             }
         }
 

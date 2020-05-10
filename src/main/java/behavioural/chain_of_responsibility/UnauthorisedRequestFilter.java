@@ -7,13 +7,17 @@ import java.util.Map;
 
 public class UnauthorisedRequestFilter implements IFilter {
 
-    private class TimeCount {
+    private class RequestCounter {
         public final long _startingTime;
         public int count;
 
-        public TimeCount() {
+        public RequestCounter() {
             this._startingTime = now();
-            count = 1;
+            this.count = 1;
+        }
+
+        public void increment() {
+            this.count += 1;
         }
     }
 
@@ -21,36 +25,42 @@ public class UnauthorisedRequestFilter implements IFilter {
      * Max requests allowed during timespan
      */
     private final int MAX_REQUESTS = 3;
-    private final long TIMESPAN = 3000;
+    private final long TIMESPAN = 10000;
 
 
     /**
      * Contains IP, Starting Time, Request Count
      */
-    private Map<String, TimeCount> log;
+    private Map<String, RequestCounter> requestLog;
 
     private static List<String> blockedIps = new ArrayList<>();
 
     public UnauthorisedRequestFilter() {
-        this.log = new HashMap<>();
+        this.requestLog = new HashMap<>();
     }
 
     @Override
     public void doFilter(Request request, Response response) {
         if(isIpBlocked(request.getIp())) {
-            return;
-        } else if (log.containsKey(request.getIp())) {
-            TimeCount timeCount = log.get(request.getIp());
+            response.setResponseType(ResponseType.FORBIDDEN);
+        } else if (requestLog.containsKey(request.getIp())) {
+            RequestCounter timeCount = requestLog.get(request.getIp());
             // compare times
-            if(now() - timeCount._startingTime < TIMESPAN && timeCount.count >= MAX_REQUESTS) {
+            long timeDiff = now() - timeCount._startingTime;
+            if (timeDiff < TIMESPAN && timeCount.count >= MAX_REQUESTS) {
                 // multiple requests during short period
-                blockedIps.add(request.getIp());
+                setBlocked(request.getIp(), response);
+            } else if (timeDiff < TIMESPAN && timeCount.count < MAX_REQUESTS) {
+                // yet another unauthorised request, but within time and MAX_REQUESTS limits
+                timeCount.increment();
             } else {
-                // incorrect requests are not during short period - reset counter
+                // incorrect requests are not during short period - restart timer
                 resetTimer(request.getIp());
+                setUnauthorised(response);
             }
         } else {
-            log.put(request.getIp(), new TimeCount());
+            startTimer(request.getIp());
+            setUnauthorised(response);
         }
     }
 
@@ -59,14 +69,25 @@ public class UnauthorisedRequestFilter implements IFilter {
     }
 
     private void resetTimer(String ip) {
-        this.log.put(ip, new TimeCount());
+        this.requestLog.put(ip, new RequestCounter());
     }
 
     public boolean isIpBlocked(String ip) {
         return blockedIps.contains(ip);
     }
 
+    private void setBlocked(String ip, Response response) {
+        blockedIps.add(ip);
+        response.setResponseType(ResponseType.FORBIDDEN);
+    }
 
+    private void setUnauthorised(Response response) {
+        response.setResponseType(ResponseType.UNAUTHORISED);
+    }
+
+    private void startTimer(String ip) {
+        requestLog.put(ip, new RequestCounter());
+    }
 }
 
 
