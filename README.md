@@ -16,9 +16,9 @@ In repository so far:
   - [ ] Facade
   - [ ] Flyweight
 - [ ] Behavioral
-  - [ ] Chain of Responsibility
-  - [ ] Command
-  - [ ] Iteratory
+  - [x] Chain of Responsibility
+  - [x] Command
+  - [x] Iterator
   - [ ] Mediator
   - [ ] Memento
   - [ ] Observer
