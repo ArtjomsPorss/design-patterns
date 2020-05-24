@@ -5,7 +5,7 @@ In repository so far:
 - [ ] Creational
   - [x] Factory Method
   - [ ] Abstract Factory
-  - [ ] Builder
+  - [x] Builder
   - [ ] Prototype
   - [ ] Singleton
 - [ ] Structural
@@ -15,12 +15,13 @@ In repository so far:
   - [ ] Decorator
   - [ ] Facade
   - [ ] Flyweight
+  - [ ] Proxy
 - [ ] Behavioral
   - [x] Chain of Responsibility
   - [x] Command
   - [x] Iterator
   - [x] Mediator
-  - [ ] Memento
+  - [x] Memento
   - [ ] Observer
   - [ ] State
   - [ ] Strategy
