@@ -12,7 +12,7 @@ In repository so far:
   - [ ] Adapter
   - [x] Composite
   - [x] Bridge
-  - [ ] Decorator
+  - [x] Decorator
   - [ ] Facade
   - [ ] Flyweight
   - [ ] Proxy
