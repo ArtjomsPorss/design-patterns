@@ -9,7 +9,7 @@ In repository so far:
   - [ ] Prototype
   - [ ] Singleton
 - [ ] Structural
-  - [ ] Adapter
+  - [x] Adapter
   - [x] Composite
   - [x] Bridge
   - [x] Decorator
